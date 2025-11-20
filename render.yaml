@@ -5,7 +5,7 @@ services:
     name: dating-website
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn Dating_Website.wsgi:application"
+    startCommand: "gunicorn --config gunicorn.conf.py Dating_Website.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.3
