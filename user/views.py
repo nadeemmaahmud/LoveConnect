@@ -1,0 +1,135 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import HttpResponseForbidden
+from .forms import UserRegistrationForm, UserProfileForm, AdminUserEditForm, UserPasswordChangeForm
+from .models import User
+
+
+def register_view(request):
+    """User registration view"""
+    if request.user.is_authenticated:
+        return redirect('profile')
+    
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Registration successful! Welcome to our dating website.')
+            return redirect('profile')
+    else:
+        form = UserRegistrationForm()
+    
+    return render(request, 'user/register.html', {'form': form})
+
+
+def login_view(request):
+    """User login view"""
+    if request.user.is_authenticated:
+        return redirect('profile')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Welcome back, {user.first_name}!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    
+    return render(request, 'user/login.html')
+
+
+def logout_view(request):
+    """User logout view"""
+    logout(request)
+    messages.info(request, 'You have been logged out.')
+    return redirect('landing')
+
+
+@login_required
+def profile_view(request):
+    """View and edit user profile"""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    return render(request, 'user/profile.html', {'form': form})
+
+
+@login_required
+def admin_dashboard(request):
+    """Admin dashboard to view all users"""
+    if request.user.role != 'admin':
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('profile')
+    
+    users = User.objects.all().order_by('-date_joined')
+    return render(request, 'user/admin_dashboard.html', {'users': users})
+
+
+@login_required
+def admin_edit_user(request, user_id):
+    """Admin view to edit any user's credentials"""
+    if request.user.role != 'admin':
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('profile')
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        form = AdminUserEditForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'User {user.username} updated successfully!')
+            return redirect('admin_dashboard')
+    else:
+        form = AdminUserEditForm(instance=user)
+    
+    return render(request, 'user/admin_edit_user.html', {'form': form, 'edited_user': user})
+
+
+@login_required
+def admin_delete_user(request, user_id):
+    """Admin view to delete a user"""
+    if request.user.role != 'admin':
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('profile')
+    
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        username = user.username
+        user.delete()
+        messages.success(request, f'User {username} deleted successfully!')
+        return redirect('admin_dashboard')
+    
+    return render(request, 'user/admin_delete_user.html', {'deleted_user': user})
+
+
+@login_required
+def change_password(request):
+    """View for users to change their own password"""
+    if request.method == 'POST':
+        form = UserPasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keep user logged in after password change
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = UserPasswordChangeForm(request.user)
+    
+    return render(request, 'user/change_password.html', {'form': form})
