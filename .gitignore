@@ -61,6 +61,13 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# Static files
+staticfiles/
+static/
+
+# Media files (you may want to track these or use cloud storage)
+# media/
+
 # Flask stuff:
 instance/
 .webassets-cache
