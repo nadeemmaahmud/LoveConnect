@@ -5,8 +5,6 @@ It exposes the ASGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
-
-NOTE: This file is NOT used in production. We use WSGI (wsgi.py) with Gunicorn.
 """
 
 import os
@@ -15,5 +13,4 @@ from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Dating_Website.settings')
 
-# ASGI application - NOT USED in production
-asgi_application = get_asgi_application()
+application = get_asgi_application()
