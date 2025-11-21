@@ -29,11 +29,19 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-# CSRF Trusted Origins for Render
+# Add Railway domain if present
+RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+if RAILWAY_PUBLIC_DOMAIN:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+
+# CSRF Trusted Origins for Render and Railway
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'https://loveconnect-q6uk.onrender.com',
+    'https://*.railway.app',
 ]
+if RAILWAY_PUBLIC_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
 
 # Logging configuration
 LOGGING = {
