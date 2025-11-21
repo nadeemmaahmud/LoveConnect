@@ -29,11 +29,15 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'phone', 'gender', 'profile_pic']
+        widgets = {
+            'profile_pic': forms.FileInput(attrs={'class': 'form-control'}),
+        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
+            if field_name != 'profile_pic':
+                field.widget.attrs['class'] = 'form-control'
 
 
 class AdminUserEditForm(forms.ModelForm):
