@@ -186,6 +186,14 @@ try:
         'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
     }
     
+    # Configure cloudinary directly as well
+    cloudinary.config(
+        cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+        api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+        api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+        secure=True
+    )
+    
     # Use Cloudinary for media storage in production
     if os.environ.get('DATABASE_URL'):  # If we're in production
         DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

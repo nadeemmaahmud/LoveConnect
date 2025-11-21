@@ -12,18 +12,32 @@ from .models import User
 def debug_profile_pic(request):
     """Debug view to check profile picture configuration"""
     user = request.user
+    
+    try:
+        pic_url = user.profile_pic.url if user.profile_pic else 'None'
+    except Exception as e:
+        pic_url = f'ERROR: {str(e)}'
+    
     info = {
         'username': user.username,
         'has_profile_pic_field': bool(user.profile_pic),
         'profile_pic_path': str(user.profile_pic) if user.profile_pic else 'None',
-        'profile_pic_url': user.profile_pic.url if user.profile_pic else 'None',
+        'profile_pic_url': pic_url,
         'default_file_storage': getattr(settings, 'DEFAULT_FILE_STORAGE', 'NOT SET'),
         'cloudinary_configured': 'cloudinary' in str(getattr(settings, 'DEFAULT_FILE_STORAGE', '')),
+        'cloudinary_storage': getattr(settings, 'CLOUDINARY_STORAGE', {}),
     }
     html = "<h2>Profile Picture Debug</h2><ul>"
     for key, value in info.items():
         html += f"<li><strong>{key}:</strong> {value}</li>"
-    html += "</ul><p><a href='/user/profile/'>Back to Profile</a></p>"
+    html += "</ul><hr>"
+    html += "<h3>Instructions:</h3>"
+    html += "<ol>"
+    html += "<li>If 'cloudinary_configured' is True, Cloudinary is working</li>"
+    html += "<li>If 'has_profile_pic_field' is True but image doesn't show, the old file was deleted</li>"
+    html += "<li><strong>Solution:</strong> Go to profile, upload a NEW image to replace the broken one</li>"
+    html += "</ol>"
+    html += "<p><a href='/user/profile/'>Go to Profile</a></p>"
     return HttpResponse(html)
 
 
