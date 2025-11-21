@@ -2,9 +2,26 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from .forms import UserRegistrationForm, UserProfileForm, AdminUserEditForm, UserPasswordChangeForm
 from .models import User
+
+
+@login_required
+def promote_to_admin(request):
+    """One-time use endpoint to promote current user to admin"""
+    # Security: Only allow if there are no admin users yet
+    if User.objects.filter(role='admin').exists():
+        return HttpResponse('Admin users already exist. This endpoint is disabled.', status=403)
+    
+    user = request.user
+    user.role = 'admin'
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
+    
+    messages.success(request, f'Congratulations! You have been promoted to admin.')
+    return redirect('admin_dashboard')
 
 
 def register_view(request):
