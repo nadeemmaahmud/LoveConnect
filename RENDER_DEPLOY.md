@@ -14,7 +14,7 @@
    - **Branch:** `master`
    - **Runtime:** `Python 3`
    - **Build Command:** `./build.sh`
-   - **Start Command:** `gunicorn Dating_Website.wsgi:application`
+   - **Start Command:** `gunicorn Dating_Website.wsgi:application --bind 0.0.0.0:$PORT`
    - **Instance Type:** `Free`
 
 6. **Add Environment Variables** (click "Advanced"):
