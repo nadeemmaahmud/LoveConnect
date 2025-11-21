@@ -63,9 +63,8 @@ db.sqlite3-journal
 
 # Static files
 staticfiles/
-static/
 
-# Media files (using Cloudinary in production)
+# Media files (using Cloudinary)
 media/
 
 # Flask stuff:
