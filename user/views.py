@@ -3,8 +3,28 @@ from django.contrib.auth import login, authenticate, logout, update_session_auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse
+from django.conf import settings
 from .forms import UserRegistrationForm, UserProfileForm, AdminUserEditForm, UserPasswordChangeForm
 from .models import User
+
+
+@login_required
+def debug_profile_pic(request):
+    """Debug view to check profile picture configuration"""
+    user = request.user
+    info = {
+        'username': user.username,
+        'has_profile_pic_field': bool(user.profile_pic),
+        'profile_pic_path': str(user.profile_pic) if user.profile_pic else 'None',
+        'profile_pic_url': user.profile_pic.url if user.profile_pic else 'None',
+        'default_file_storage': getattr(settings, 'DEFAULT_FILE_STORAGE', 'NOT SET'),
+        'cloudinary_configured': 'cloudinary' in str(getattr(settings, 'DEFAULT_FILE_STORAGE', '')),
+    }
+    html = "<h2>Profile Picture Debug</h2><ul>"
+    for key, value in info.items():
+        html += f"<li><strong>{key}:</strong> {value}</li>"
+    html += "</ul><p><a href='/user/profile/'>Back to Profile</a></p>"
+    return HttpResponse(html)
 
 
 @login_required
