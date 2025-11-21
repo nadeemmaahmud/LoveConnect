@@ -3,42 +3,8 @@ from django.contrib.auth import login, authenticate, logout, update_session_auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse
-from django.conf import settings
 from .forms import UserRegistrationForm, UserProfileForm, AdminUserEditForm, UserPasswordChangeForm
 from .models import User
-
-
-@login_required
-def debug_profile_pic(request):
-    """Debug view to check profile picture configuration"""
-    user = request.user
-    
-    try:
-        pic_url = user.profile_pic.url if user.profile_pic else 'None'
-    except Exception as e:
-        pic_url = f'ERROR: {str(e)}'
-    
-    info = {
-        'username': user.username,
-        'has_profile_pic_field': bool(user.profile_pic),
-        'profile_pic_path': str(user.profile_pic) if user.profile_pic else 'None',
-        'profile_pic_url': pic_url,
-        'default_file_storage': getattr(settings, 'DEFAULT_FILE_STORAGE', 'NOT SET'),
-        'cloudinary_configured': 'cloudinary' in str(getattr(settings, 'DEFAULT_FILE_STORAGE', '')),
-        'cloudinary_storage': getattr(settings, 'CLOUDINARY_STORAGE', {}),
-    }
-    html = "<h2>Profile Picture Debug</h2><ul>"
-    for key, value in info.items():
-        html += f"<li><strong>{key}:</strong> {value}</li>"
-    html += "</ul><hr>"
-    html += "<h3>Instructions:</h3>"
-    html += "<ol>"
-    html += "<li>If 'cloudinary_configured' is True, Cloudinary is working</li>"
-    html += "<li>If 'has_profile_pic_field' is True but image doesn't show, the old file was deleted</li>"
-    html += "<li><strong>Solution:</strong> Go to profile, upload a NEW image to replace the broken one</li>"
-    html += "</ol>"
-    html += "<p><a href='/user/profile/'>Go to Profile</a></p>"
-    return HttpResponse(html)
 
 
 @login_required
@@ -118,13 +84,7 @@ def profile_view(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            user = form.save()
-            # Debug: Log what happened with profile_pic
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.info(f"Profile updated for {user.username}")
-            logger.info(f"Profile pic field: {user.profile_pic}")
-            logger.info(f"Profile pic URL: {user.profile_pic.url if user.profile_pic else 'None'}")
+            form.save()
             messages.success(request, 'Profile updated successfully!')
             return redirect('profile')
         else:

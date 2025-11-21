@@ -8,9 +8,7 @@
         <div class="card shadow">
             <div class="card-body text-center">
                 {% if user.profile_pic %}
-                    <!-- Debug: Show the actual URL -->
-                    <p style="font-size: 10px; word-break: break-all;">DEBUG URL: {{ user.profile_pic.url }}</p>
-                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;" onerror="console.error('Image failed:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="bg-secondary rounded-circle mx-auto mb-3 align-items-center justify-content-center" style="width: 200px; height: 200px; display: none;">
                         <span class="text-white" style="font-size: 80px;">👤</span>
                     </div>
