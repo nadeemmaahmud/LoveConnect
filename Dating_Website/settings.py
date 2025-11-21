@@ -29,19 +29,22 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-# Add Railway domain if present
-RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
-if RAILWAY_PUBLIC_DOMAIN:
-    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+# Add PythonAnywhere domain
+PYTHONANYWHERE_DOMAIN = os.environ.get('PYTHONANYWHERE_DOMAIN', '')
+if PYTHONANYWHERE_DOMAIN:
+    ALLOWED_HOSTS.append(PYTHONANYWHERE_DOMAIN)
 
-# CSRF Trusted Origins for Render and Railway
+# Auto-detect PythonAnywhere username from environment
+PYTHONANYWHERE_USER = os.environ.get('USER', '')
+if PYTHONANYWHERE_USER:
+    ALLOWED_HOSTS.append(f'{PYTHONANYWHERE_USER}.pythonanywhere.com')
+
+# CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.onrender.com',
-    'https://loveconnect-q6uk.onrender.com',
-    'https://*.railway.app',
+    'https://*.pythonanywhere.com',
 ]
-if RAILWAY_PUBLIC_DOMAIN:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
+if PYTHONANYWHERE_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{PYTHONANYWHERE_DOMAIN}')
 
 # Logging configuration
 LOGGING = {
@@ -205,7 +208,7 @@ try:
     )
     
     # Use Cloudinary for media storage in production
-    if os.environ.get('DATABASE_URL'):  # If we're in production
+    if os.environ.get('DATABASE_URL') or os.environ.get('PYTHONANYWHERE_DOMAIN'):
         DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
         import logging
         logger = logging.getLogger(__name__)
@@ -218,3 +221,13 @@ except ImportError:
 LOGIN_REDIRECT_URL = 'profile'
 LOGOUT_REDIRECT_URL = 'landing'
 LOGIN_URL = 'login'
+
+# Load .env file if it exists (for PythonAnywhere)
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    with open(env_file) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                os.environ.setdefault(key, value)
