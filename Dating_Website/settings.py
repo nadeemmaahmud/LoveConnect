@@ -189,6 +189,9 @@ try:
     # Use Cloudinary for media storage in production
     if os.environ.get('DATABASE_URL'):  # If we're in production
         DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Cloudinary configured: {CLOUDINARY_STORAGE['CLOUD_NAME']}")
 except ImportError:
     # Cloudinary not installed, use local storage
     pass
