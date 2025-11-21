@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python39", "postgresql"]
+nixPkgs = ["python39"]
 
 [phases.install]
 cmds = ["pip install -r requirements.txt"]
@@ -8,4 +8,4 @@ cmds = ["pip install -r requirements.txt"]
 cmds = ["python manage.py collectstatic --noinput"]
 
 [start]
-cmd = "gunicorn Dating_Website.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = "python manage.py migrate --noinput && gunicorn Dating_Website.wsgi:application --bind 0.0.0.0:$PORT"
