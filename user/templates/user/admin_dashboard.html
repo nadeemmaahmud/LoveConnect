@@ -28,7 +28,8 @@
                     <tr>
                         <td>
                             {% if user_obj.profile_pic %}
-                                <img src="{{ user_obj.profile_pic.url }}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                <img src="{{ user_obj.profile_pic.url }}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                <span style="font-size: 30px; display: none;">👤</span>
                             {% else %}
                                 <span style="font-size: 30px;">👤</span>
                             {% endif %}

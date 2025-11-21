@@ -8,7 +8,10 @@
         <div class="card shadow">
             <div class="card-body text-center">
                 {% if user.profile_pic %}
-                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;">
+                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="bg-secondary rounded-circle mx-auto mb-3 align-items-center justify-content-center" style="width: 200px; height: 200px; display: none;">
+                        <span class="text-white" style="font-size: 80px;">👤</span>
+                    </div>
                 {% else %}
                     <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
                         <span class="text-white" style="font-size: 80px;">👤</span>
