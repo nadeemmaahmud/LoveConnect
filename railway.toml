@@ -1,8 +1,0 @@
-[build]
-builder = "nixpacks"
-buildCommand = "pip install -r requirements.txt && python manage.py collectstatic --noinput"
-
-[deploy]
-startCommand = "python manage.py migrate --noinput && gunicorn Dating_Website.wsgi:application --bind 0.0.0.0:$PORT"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 10
