@@ -25,6 +25,6 @@ urlpatterns = [
     path('user/', include('user.urls')),
 ]
 
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media files (profile pictures)
+# Note: In production with high traffic, consider using cloud storage like AWS S3 or Cloudinary
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
