@@ -109,9 +109,17 @@ def profile_view(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            # Debug: Log what happened with profile_pic
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Profile updated for {user.username}")
+            logger.info(f"Profile pic field: {user.profile_pic}")
+            logger.info(f"Profile pic URL: {user.profile_pic.url if user.profile_pic else 'None'}")
             messages.success(request, 'Profile updated successfully!')
             return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = UserProfileForm(instance=request.user)
     
