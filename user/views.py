@@ -106,6 +106,15 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     """View and edit user profile"""
+    # Handle profile picture deletion
+    if request.method == 'POST' and 'delete_profile_pic' in request.POST:
+        if request.user.profile_pic:
+            request.user.profile_pic.delete()
+            request.user.profile_pic = None
+            request.user.save()
+            messages.success(request, 'Profile picture removed successfully!')
+        return redirect('profile')
+    
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
